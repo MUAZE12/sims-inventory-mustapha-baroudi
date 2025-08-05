@@ -1,0 +1,2457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIMS - Interactive Pro Demo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --success-gradient: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            --warning-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --info-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --dark-gradient: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+        }
+
+        * { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        
+        body { 
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .main-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            margin: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            animation: slideInUp 0.8s ease-out;
+        }
+
+        @keyframes slideInUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes fadeInScale {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        @keyframes slideInLeft {
+            from { transform: translateX(-30px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .navbar {
+            background: var(--glass-bg) !important;
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+            border-radius: 20px 20px 0 0;
+        }
+
+        .navbar-brand { 
+            font-weight: 700; 
+            font-size: 1.5rem;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-link {
+            font-weight: 500;
+            border-radius: 15px;
+            margin: 0 5px;
+            padding: 10px 20px !important;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background: var(--primary-gradient);
+            color: white !important;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .card {
+            border: none;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+            animation: fadeInScale 0.6s ease-out;
+        }
+
+        .card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+
+        .metric-card {
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .metric-card:hover::before {
+            left: 100%;
+        }
+
+        .metric-card.primary { background: var(--primary-gradient); }
+        .metric-card.success { background: var(--success-gradient); }
+        .metric-card.warning { background: var(--warning-gradient); }
+        .metric-card.info { background: var(--info-gradient); }
+
+        .btn {
+            border-radius: 15px;
+            font-weight: 500;
+            padding: 12px 25px;
+            border: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255,255,255,0.3);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.3s, height 0.3s;
+        }
+
+        .btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn-primary { background: var(--primary-gradient); }
+        .btn-success { background: var(--success-gradient); }
+        .btn-warning { background: var(--warning-gradient); }
+        .btn-info { background: var(--info-gradient); }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+        }
+
+        .table-row {
+            cursor: pointer;
+            border-radius: 10px;
+            margin: 5px 0;
+        }
+
+        .table-row:hover {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1)) !important;
+            transform: translateX(10px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .modal-content {
+            border-radius: 20px;
+            border: none;
+            backdrop-filter: blur(20px);
+            background: rgba(255, 255, 255, 0.95);
+            animation: modalSlideIn 0.4s ease-out;
+        }
+
+        @keyframes modalSlideIn {
+            from { transform: scale(0.8) translateY(-50px); opacity: 0; }
+            to { transform: scale(1) translateY(0); opacity: 1; }
+        }
+
+        .form-control, .form-select {
+            border-radius: 15px;
+            border: 2px solid #e9ecef;
+            padding: 12px 20px;
+            font-weight: 500;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+            transform: translateY(-2px);
+        }
+
+        .badge {
+            border-radius: 20px;
+            padding: 8px 15px;
+            font-weight: 500;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            min-width: 350px;
+            border-radius: 15px;
+            backdrop-filter: blur(20px);
+            animation: slideInRight 0.5s ease-out;
+        }
+
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .demo-badge {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+
+        .page-content {
+            display: none;
+            animation: slideInLeft 0.6s ease-out;
+        }
+
+        .page-content.active { display: block; }
+
+        .stats-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stats-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(from 0deg, transparent, rgba(102, 126, 234, 0.1), transparent);
+            animation: rotate 4s linear infinite;
+        }
+
+        @keyframes rotate {
+            to { transform: rotate(360deg); }
+        }
+
+        .stats-card-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .report-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 20px;
+            margin: 10px 0;
+            cursor: pointer;
+        }
+
+        .report-card:hover {
+            background: rgba(102, 126, 234, 0.1);
+            transform: translateY(-5px);
+        }
+
+        .progress-bar {
+            border-radius: 10px;
+            background: var(--primary-gradient);
+            animation: progressFill 2s ease-out;
+        }
+
+        @keyframes progressFill {
+            from { width: 0%; }
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-badge">
+        <span class="badge bg-success fs-6">
+            <i class="fas fa-rocket"></i> INTERACTIVE PRO
+        </span>
+    </div>
+
+    <div class="main-container">
+        <!-- Navigation -->
+        <nav class="navbar navbar-expand-lg">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="#" onclick="showPage('dashboard')">
+                    <i class="fas fa-gem"></i> SIMS Pro
+                </a>
+                
+                <div class="navbar-nav me-auto">
+                    <a class="nav-link active" onclick="showPage('dashboard')">
+                        <i class="fas fa-tachometer-alt"></i> Dashboard
+                    </a>
+                    <a class="nav-link" onclick="showPage('products')">
+                        <i class="fas fa-box"></i> Products
+                    </a>
+                    <a class="nav-link" onclick="showPage('inventory')">
+                        <i class="fas fa-warehouse"></i> Inventory
+                    </a>
+                    <a class="nav-link" onclick="showPage('sales')">
+                        <i class="fas fa-shopping-cart"></i> Sales
+                    </a>
+                    <a class="nav-link" onclick="showPage('analytics')">
+                        <i class="fas fa-chart-bar"></i> Analytics
+                    </a>
+                </div>
+                
+                <div class="navbar-nav">
+                    <span class="navbar-text text-dark fw-bold me-3">
+                        <i class="fas fa-flag text-success"></i> Morocco 🇲🇦
+                    </span>
+                    <button class="btn btn-outline-primary btn-sm" onclick="showDeveloperInfo()">
+                        <i class="fas fa-user-tie"></i> Developer
+                    </button>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Dashboard Page -->
+        <div id="dashboard" class="page-content active">
+            <div class="container-fluid py-4">
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h1 class="fw-bold mb-3">
+                            <i class="fas fa-tachometer-alt text-primary"></i> Dashboard
+                        </h1>
+                        <p class="text-muted fs-5">Welcome back! Here's your business overview</p>
+                    </div>
+                </div>
+
+                <!-- Metrics Cards -->
+                <div class="row mb-5">
+                    <div class="col-md-3 mb-4">
+                        <div class="card metric-card primary text-white" onclick="showMetricDetails('products')">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h2 class="fw-bold mb-1" id="totalProducts">5</h2>
+                                        <p class="mb-0 opacity-90">Total Products</p>
+                                        <small class="opacity-75">Active inventory</small>
+                                    </div>
+                                    <div class="fs-1 opacity-75">
+                                        <i class="fas fa-box"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-4">
+                        <div class="card metric-card success text-white" onclick="showMetricDetails('value')">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h2 class="fw-bold mb-1">18,840 MAD</h2>
+                                        <p class="mb-0 opacity-90">Inventory Value</p>
+                                        <small class="opacity-75">Total worth</small>
+                                    </div>
+                                    <div class="fs-1 opacity-75">
+                                        <i class="fas fa-coins"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-4">
+                        <div class="card metric-card info text-white" onclick="showMetricDetails('sales')">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h2 class="fw-bold mb-1">23</h2>
+                                        <p class="mb-0 opacity-90">Sales (7 days)</p>
+                                        <small class="opacity-75">Recent activity</small>
+                                    </div>
+                                    <div class="fs-1 opacity-75">
+                                        <i class="fas fa-shopping-cart"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-4">
+                        <div class="card metric-card warning text-white" onclick="showPage('products')">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h2 class="fw-bold mb-1">2</h2>
+                                        <p class="mb-0 opacity-90">Low Stock</p>
+                                        <small class="opacity-75">Need attention</small>
+                                    </div>
+                                    <div class="fs-1 opacity-75">
+                                        <i class="fas fa-exclamation-triangle"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="row mb-5">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header bg-transparent">
+                                <h5 class="fw-bold mb-0">
+                                    <i class="fas fa-bolt text-warning"></i> Quick Actions
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-3 mb-3">
+                                        <button class="btn btn-primary w-100 py-3" onclick="showModal('addProductModal')">
+                                            <i class="fas fa-plus mb-2"></i><br>
+                                            <span class="fw-bold">Add Product</span>
+                                        </button>
+                                    </div>
+                                    <div class="col-md-3 mb-3">
+                                        <button class="btn btn-success w-100 py-3" onclick="showModal('newSaleModal')">
+                                            <i class="fas fa-shopping-cart mb-2"></i><br>
+                                            <span class="fw-bold">New Sale</span>
+                                        </button>
+                                    </div>
+                                    <div class="col-md-3 mb-3">
+                                        <button class="btn btn-warning w-100 py-3" onclick="showStockAdjustment()">
+                                            <i class="fas fa-boxes mb-2"></i><br>
+                                            <span class="fw-bold">Adjust Stock</span>
+                                        </button>
+                                    </div>
+                                    <div class="col-md-3 mb-3">
+                                        <button class="btn btn-info w-100 py-3" onclick="showPage('analytics')">
+                                            <i class="fas fa-chart-line mb-2"></i><br>
+                                            <span class="fw-bold">View Reports</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header bg-transparent">
+                                <h5 class="fw-bold mb-0">
+                                    <i class="fas fa-history text-info"></i> Recent Activity
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="timeline">
+                                    <div class="d-flex align-items-center mb-3 p-3 rounded" style="background: rgba(40, 167, 69, 0.1);">
+                                        <div class="me-3">
+                                            <i class="fas fa-shopping-cart text-success fs-4"></i>
+                                        </div>
+                                        <div class="flex-grow-1">
+                                            <h6 class="mb-1 fw-bold">Sale Completed</h6>
+                                            <p class="mb-1">Cotton Fabric - Blue sold (5 units) - 127.50 MAD</p>
+                                            <small class="text-muted">2 hours ago</small>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex align-items-center mb-3 p-3 rounded" style="background: rgba(0, 123, 255, 0.1);">
+                                        <div class="me-3">
+                                            <i class="fas fa-truck text-primary fs-4"></i>
+                                        </div>
+                                        <div class="flex-grow-1">
+                                            <h6 class="mb-1 fw-bold">Stock Received</h6>
+                                            <p class="mb-1">LED Bulbs restocked (50 units)</p>
+                                            <small class="text-muted">1 day ago</small>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex align-items-center p-3 rounded" style="background: rgba(255, 193, 7, 0.1);">
+                                        <div class="me-3">
+                                            <i class="fas fa-exclamation-triangle text-warning fs-4"></i>
+                                        </div>
+                                        <div class="flex-grow-1">
+                                            <h6 class="mb-1 fw-bold">Low Stock Alert</h6>
+                                            <p class="mb-1">Wireless Mouse needs reorder (8 units remaining)</p>
+                                            <small class="text-muted">2 days ago</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Products Page -->
+        <div id="products" class="page-content">
+            <div class="container-fluid py-4">
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h1 class="fw-bold mb-2">
+                                    <i class="fas fa-box text-primary"></i> Products
+                                </h1>
+                                <p class="text-muted">Manage your product catalog</p>
+                            </div>
+                            <button class="btn btn-primary btn-lg" onclick="showModal('addProductModal')">
+                                <i class="fas fa-plus"></i> Add Product
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Products Grid -->
+                <div class="row" id="productsGrid">
+                    <!-- Products will be loaded here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Inventory Page -->
+        <div id="inventory" class="page-content">
+            <div class="container-fluid py-4">
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h1 class="fw-bold mb-2">
+                            <i class="fas fa-warehouse text-primary"></i> Inventory Management
+                        </h1>
+                        <p class="text-muted">Advanced inventory tools and reports</p>
+                    </div>
+                </div>
+
+                <!-- Inventory Tools -->
+                <div class="row mb-5">
+                    <div class="col-md-3 mb-4">
+                        <div class="stats-card" onclick="showBulkAdjustment()">
+                            <div class="stats-card-content">
+                                <i class="fas fa-boxes text-primary fs-1 mb-3"></i>
+                                <h5 class="fw-bold">Bulk Adjustment</h5>
+                                <p class="text-muted">Adjust multiple products</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-4">
+                        <div class="stats-card" onclick="showReorderReport()">
+                            <div class="stats-card-content">
+                                <i class="fas fa-shopping-cart text-success fs-1 mb-3"></i>
+                                <h5 class="fw-bold">Reorder Report</h5>
+                                <p class="text-muted">Products to reorder</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-4">
+                        <div class="stats-card" onclick="showLowStockReport()">
+                            <div class="stats-card-content">
+                                <i class="fas fa-exclamation-triangle text-warning fs-1 mb-3"></i>
+                                <h5 class="fw-bold">Low Stock Items</h5>
+                                <p class="text-muted">Items needing attention</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-4">
+                        <div class="stats-card" onclick="showValuationReport()">
+                            <div class="stats-card-content">
+                                <i class="fas fa-calculator text-info fs-1 mb-3"></i>
+                                <h5 class="fw-bold">Valuation Report</h5>
+                                <p class="text-muted">Inventory worth analysis</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Transactions -->
+                <div class="card">
+                    <div class="card-header bg-transparent">
+                        <h5 class="fw-bold mb-0">
+                            <i class="fas fa-history text-info"></i> Recent Transactions
+                        </h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th class="fw-bold">Date & Time</th>
+                                        <th class="fw-bold">Product</th>
+                                        <th class="fw-bold">Type</th>
+                                        <th class="fw-bold">Quantity</th>
+                                        <th class="fw-bold">Stock After</th>
+                                        <th class="fw-bold">Value</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="table-row">
+                                        <td>Dec 5, 2024 14:30</td>
+                                        <td><strong>Cotton Fabric - Blue</strong><br><small class="text-muted">CTN-BLU-001</small></td>
+                                        <td><span class="badge bg-danger">Sale</span></td>
+                                        <td class="text-danger fw-bold">-5</td>
+                                        <td class="fw-bold">150</td>
+                                        <td class="text-success fw-bold">127.50 MAD</td>
+                                    </tr>
+                                    <tr class="table-row">
+                                        <td>Dec 4, 2024 09:15</td>
+                                        <td><strong>LED Light Bulb 10W</strong><br><small class="text-muted">LED-10W-001</small></td>
+                                        <td><span class="badge bg-success">Purchase</span></td>
+                                        <td class="text-success fw-bold">+50</td>
+                                        <td class="fw-bold">55</td>
+                                        <td class="text-primary fw-bold">1,500.00 MAD</td>
+                                    </tr>
+                                    <tr class="table-row">
+                                        <td>Dec 3, 2024 16:45</td>
+                                        <td><strong>Wireless Mouse</strong><br><small class="text-muted">MSE-WRL-001</small></td>
+                                        <td><span class="badge bg-warning text-dark">Adjustment</span></td>
+                                        <td class="text-warning fw-bold">-2</td>
+                                        <td class="fw-bold">8</td>
+                                        <td class="text-muted">160.00 MAD</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sales Page -->
+        <div id="sales" class="page-content">
+            <div class="container-fluid py-4">
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h1 class="fw-bold mb-2">
+                                    <i class="fas fa-shopping-cart text-primary"></i> Sales Management
+                                </h1>
+                                <p class="text-muted">Track and manage your sales</p>
+                            </div>
+                            <button class="btn btn-success btn-lg" onclick="showModal('newSaleModal')">
+                                <i class="fas fa-plus"></i> New Sale
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sales Summary -->
+                <div class="row mb-5">
+                    <div class="col-md-4 mb-4">
+                        <div class="card metric-card success text-white">
+                            <div class="card-body text-center">
+                                <h2 class="fw-bold">1,250.00 MAD</h2>
+                                <p class="mb-0 opacity-90">Today's Sales</p>
+                                <small class="opacity-75">8 transactions</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-4">
+                        <div class="card metric-card info text-white">
+                            <div class="card-body text-center">
+                                <h2 class="fw-bold">8,750.00 MAD</h2>
+                                <p class="mb-0 opacity-90">This Week</p>
+                                <small class="opacity-75">56 transactions</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-4">
+                        <div class="card metric-card primary text-white">
+                            <div class="card-body text-center">
+                                <h2 class="fw-bold">32,500.00 MAD</h2>
+                                <p class="mb-0 opacity-90">This Month</p>
+                                <small class="opacity-75">234 transactions</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Sales -->
+                <div class="card">
+                    <div class="card-header bg-transparent">
+                        <h5 class="fw-bold mb-0">
+                            <i class="fas fa-list text-success"></i> Recent Sales
+                        </h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th class="fw-bold">Sale #</th>
+                                        <th class="fw-bold">Date</th>
+                                        <th class="fw-bold">Customer</th>
+                                        <th class="fw-bold">Items</th>
+                                        <th class="fw-bold">Total</th>
+                                        <th class="fw-bold">Status</th>
+                                        <th class="fw-bold">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="table-row" onclick="showSaleDetails('20241205001')">
+                                        <td class="fw-bold">#20241205001</td>
+                                        <td>Dec 5, 2024 14:30</td>
+                                        <td><strong>Ahmed Hassan</strong><br><small class="text-muted">ahmed@email.com</small></td>
+                                        <td>2 items</td>
+                                        <td class="fw-bold text-success">127.50 MAD</td>
+                                        <td><span class="badge bg-success">Paid</span></td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-primary" onclick="event.stopPropagation(); printReceipt('20241205001')">
+                                                <i class="fas fa-print"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr class="table-row" onclick="showSaleDetails('20241205002')">
+                                        <td class="fw-bold">#20241205002</td>
+                                        <td>Dec 5, 2024 11:15</td>
+                                        <td><strong>Fatima Benali</strong><br><small class="text-muted">fatima@email.com</small></td>
+                                        <td>1 item</td>
+                                        <td class="fw-bold text-success">350.00 MAD</td>
+                                        <td><span class="badge bg-warning text-dark">Pending</span></td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-success" onclick="event.stopPropagation(); markPaid('20241205002')">
+                                                <i class="fas fa-check"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Analytics Page -->
+        <div id="analytics" class="page-content">
+            <div class="container-fluid py-4">
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h1 class="fw-bold mb-2">
+                            <i class="fas fa-chart-bar text-primary"></i> Analytics & Reports
+                        </h1>
+                        <p class="text-muted">Business insights and performance metrics</p>
+                    </div>
+                </div>
+
+                <!-- Analytics Cards -->
+                <div class="row mb-5">
+                    <div class="col-md-6 mb-4">
+                        <div class="card">
+                            <div class="card-header bg-transparent">
+                                <h5 class="fw-bold mb-0">
+                                    <i class="fas fa-chart-pie text-success"></i> ABC Analysis
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row text-center">
+                                    <div class="col-4">
+                                        <div class="stats-card">
+                                            <div class="stats-card-content">
+                                                <h3 class="text-success fw-bold">2</h3>
+                                                <p class="mb-1 fw-bold">Class A</p>
+                                                <small class="text-muted">80% revenue</small>
+                                                <div class="progress mt-2">
+                                                    <div class="progress-bar bg-success" style="width: 80%"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="stats-card">
+                                            <div class="stats-card-content">
+                                                <h3 class="text-warning fw-bold">2</h3>
+                                                <p class="mb-1 fw-bold">Class B</p>
+                                                <small class="text-muted">15% revenue</small>
+                                                <div class="progress mt-2">
+                                                    <div class="progress-bar bg-warning" style="width: 15%"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="stats-card">
+                                            <div class="stats-card-content">
+                                                <h3 class="text-secondary fw-bold">1</h3>
+                                                <p class="mb-1 fw-bold">Class C</p>
+                                                <small class="text-muted">5% revenue</small>
+                                                <div class="progress mt-2">
+                                                    <div class="progress-bar bg-secondary" style="width: 5%"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-4">
+                        <div class="card">
+                            <div class="card-header bg-transparent">
+                                <h5 class="fw-bold mb-0">
+                                    <i class="fas fa-chart-line text-primary"></i> Performance Metrics
+                                </h5>
+                            </div>
+                            <div class="card-body text-center">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <h2 class="text-primary fw-bold">4.2x</h2>
+                                        <p class="text-muted mb-1">Inventory Turnover</p>
+                                        <small class="text-success">
+                                            <i class="fas fa-arrow-up"></i> +12% vs last year
+                                        </small>
+                                    </div>
+                                    <div class="col-6">
+                                        <h2 class="text-success fw-bold">23.5%</h2>
+                                        <p class="text-muted mb-1">Profit Margin</p>
+                                        <small class="text-success">
+                                            <i class="fas fa-arrow-up"></i> +3.2% vs last month
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Available Reports -->
+                <div class="card">
+                    <div class="card-header bg-transparent">
+                        <h5 class="fw-bold mb-0">
+                            <i class="fas fa-file-alt text-info"></i> Available Reports
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <div class="report-card" onclick="generateSalesReport()">
+                                    <div class="text-center">
+                                        <i class="fas fa-chart-bar text-primary fs-1 mb-3"></i>
+                                        <h5 class="fw-bold">Sales Report</h5>
+                                        <p class="text-muted">Comprehensive sales analysis</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <div class="report-card" onclick="generateInventoryReport()">
+                                    <div class="text-center">
+                                        <i class="fas fa-warehouse text-success fs-1 mb-3"></i>
+                                        <h5 class="fw-bold">Inventory Report</h5>
+                                        <p class="text-muted">Stock valuation & analysis</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <div class="report-card" onclick="generateForecastReport()">
+                                    <div class="text-center">
+                                        <i class="fas fa-crystal-ball text-info fs-1 mb-3"></i>
+                                        <h5 class="fw-bold">Demand Forecast</h5>
+                                        <p class="text-muted">AI-powered predictions</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Professional Footer -->
+        <footer class="mt-5 py-4" style="background: var(--dark-gradient); color: white;">
+            <div class="container-fluid">
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-center mb-3 mb-md-0">
+                            <div class="me-4">
+                                <img src="https://via.placeholder.com/60x60/667eea/ffffff?text=MB"
+                                     alt="Mustapha Baroudi" class="rounded-circle"
+                                     style="border: 3px solid rgba(255,255,255,0.2);">
+                            </div>
+                            <div>
+                                <h6 class="fw-bold mb-1">
+                                    <i class="fas fa-code text-warning"></i> Developed by Mustapha Baroudi
+                                </h6>
+                                <p class="mb-0 opacity-75">Full-Stack Developer & Software Engineer</p>
+                                <small class="opacity-50">© 2024 All Rights Reserved</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="row text-center text-md-end">
+                            <div class="col-12">
+                                <div class="d-flex justify-content-center justify-content-md-end gap-3 mb-2">
+                                    <a href="tel:+212697362759" class="text-white text-decoration-none"
+                                       title="Call Mustapha">
+                                        <i class="fas fa-phone-alt"></i> +212 697 362 759
+                                    </a>
+                                    <a href="mailto:mustaphabaroudi833@gmail.com" class="text-white text-decoration-none"
+                                       title="Email Mustapha">
+                                        <i class="fas fa-envelope"></i> Email
+                                    </a>
+                                    <a href="https://www.linkedin.com/in/baroudi-mustapha-2a257a289/"
+                                       target="_blank" class="text-white text-decoration-none"
+                                       title="LinkedIn Profile">
+                                        <i class="fab fa-linkedin"></i> LinkedIn
+                                    </a>
+                                </div>
+                                <small class="opacity-75">
+                                    <i class="fas fa-heart text-danger"></i>
+                                    Built with passion for Moroccan businesses
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <hr class="my-3 opacity-25">
+                <div class="row">
+                    <div class="col-12 text-center">
+                        <small class="opacity-50">
+                            SIMS (Smart Inventory Management System) - Professional Portfolio Project<br>
+                            Showcasing advanced full-stack development skills with modern web technologies
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Modals -->
+
+    <!-- Add Product Modal -->
+    <div class="modal fade" id="addProductModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold">
+                        <i class="fas fa-plus text-primary"></i> Add New Product
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addProductForm">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Product Name *</label>
+                                    <input type="text" class="form-control" id="productName" placeholder="Enter product name" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">SKU *</label>
+                                    <input type="text" class="form-control" id="productSku" placeholder="Enter SKU" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Category *</label>
+                                    <select class="form-select" id="productCategory" required>
+                                        <option value="">Select Category</option>
+                                        <option value="Textiles">Textiles</option>
+                                        <option value="Electronics">Electronics</option>
+                                        <option value="Office Supplies">Office Supplies</option>
+                                        <option value="Tools">Tools</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Initial Stock</label>
+                                    <input type="number" class="form-control" id="productStock" placeholder="0" min="0">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Unit Price (MAD) *</label>
+                                    <input type="number" class="form-control" id="productPrice" placeholder="0.00" step="0.01" min="0" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Cost Price (MAD) *</label>
+                                    <input type="number" class="form-control" id="productCost" placeholder="0.00" step="0.01" min="0" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Description</label>
+                            <textarea class="form-control" id="productDescription" rows="3" placeholder="Product description (optional)"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="addProduct()">
+                        <i class="fas fa-plus"></i> Add Product
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- New Sale Modal -->
+    <div class="modal fade" id="newSaleModal" tabindex="-1">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold">
+                        <i class="fas fa-shopping-cart text-success"></i> New Sale
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <h6 class="fw-bold mb-3">Customer Information</h6>
+                            <div class="mb-3">
+                                <label class="form-label">Customer Name</label>
+                                <input type="text" class="form-control" id="customerName" placeholder="Enter customer name">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Email</label>
+                                <input type="email" class="form-control" id="customerEmail" placeholder="customer@email.com">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Phone</label>
+                                <input type="tel" class="form-control" id="customerPhone" placeholder="+212-XXX-XXXXXX">
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <h6 class="fw-bold mb-3">Sale Items</h6>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Select Product</label>
+                                    <select class="form-select" id="saleProduct">
+                                        <option value="">Choose product...</option>
+                                        <option value="1">Cotton Fabric - Blue (150 available)</option>
+                                        <option value="2">LED Light Bulb 10W (5 available)</option>
+                                        <option value="4">Silk Fabric - Red (75 available)</option>
+                                        <option value="5">Wireless Mouse (8 available)</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">Quantity</label>
+                                    <input type="number" class="form-control" id="saleQuantity" placeholder="1" min="1">
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">&nbsp;</label>
+                                    <button type="button" class="btn btn-primary w-100" onclick="addSaleItem()">
+                                        <i class="fas fa-plus"></i> Add
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Sale Items List -->
+                            <div class="card">
+                                <div class="card-header bg-light">
+                                    <h6 class="mb-0 fw-bold">Items in Sale</h6>
+                                </div>
+                                <div class="card-body p-0">
+                                    <div class="table-responsive">
+                                        <table class="table table-sm mb-0">
+                                            <thead>
+                                                <tr>
+                                                    <th>Product</th>
+                                                    <th>Qty</th>
+                                                    <th>Price</th>
+                                                    <th>Total</th>
+                                                    <th>Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="saleItemsList">
+                                                <tr>
+                                                    <td colspan="5" class="text-center text-muted py-3">No items added yet</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Sale Total -->
+                            <div class="row mt-3">
+                                <div class="col-md-6 offset-md-6">
+                                    <div class="card bg-light">
+                                        <div class="card-body">
+                                            <div class="d-flex justify-content-between mb-2">
+                                                <span>Subtotal:</span>
+                                                <span id="saleSubtotal">0.00 MAD</span>
+                                            </div>
+                                            <div class="d-flex justify-content-between mb-2">
+                                                <span>Tax (20%):</span>
+                                                <span id="saleTax">0.00 MAD</span>
+                                            </div>
+                                            <hr>
+                                            <div class="d-flex justify-content-between">
+                                                <strong>Total:</strong>
+                                                <strong class="text-success fs-5" id="saleTotal">0.00 MAD</strong>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-success" onclick="processSale()" id="processSaleBtn" disabled>
+                        <i class="fas fa-check"></i> Process Sale
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Report Modal -->
+    <div class="modal fade" id="reportModal" tabindex="-1">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold" id="reportModalTitle">
+                        <i class="fas fa-chart-bar text-primary"></i> Report
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="reportModalBody">
+                    <!-- Report content will be loaded here -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" onclick="exportReport()">
+                        <i class="fas fa-download"></i> Export PDF
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Developer Info Modal -->
+    <div class="modal fade" id="developerModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header" style="background: var(--primary-gradient); color: white;">
+                    <h5 class="modal-title fw-bold">
+                        <i class="fas fa-user-tie"></i> Meet the Developer
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-4 text-center mb-4">
+                            <img src="https://via.placeholder.com/150x150/667eea/ffffff?text=MB"
+                                 alt="Mustapha Baroudi" class="rounded-circle mb-3"
+                                 style="width: 150px; height: 150px; border: 5px solid var(--primary-gradient);">
+                            <h4 class="fw-bold">Mustapha Baroudi</h4>
+                            <p class="text-muted">Full-Stack Developer</p>
+                            <div class="d-flex justify-content-center gap-2">
+                                <span class="badge bg-primary">Python</span>
+                                <span class="badge bg-success">JavaScript</span>
+                                <span class="badge bg-info">Flask</span>
+                                <span class="badge bg-warning text-dark">React</span>
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <h5 class="fw-bold mb-3">
+                                <i class="fas fa-briefcase text-primary"></i> About This Project
+                            </h5>
+                            <p class="mb-3">
+                                SIMS (Smart Inventory Management System) is a comprehensive web application
+                                designed specifically for Moroccan small businesses. This project demonstrates
+                                advanced full-stack development skills including:
+                            </p>
+                            <div class="row mb-4">
+                                <div class="col-md-6">
+                                    <ul class="list-unstyled">
+                                        <li><i class="fas fa-check text-success"></i> Flask Backend Development</li>
+                                        <li><i class="fas fa-check text-success"></i> SQLAlchemy Database Design</li>
+                                        <li><i class="fas fa-check text-success"></i> RESTful API Development</li>
+                                        <li><i class="fas fa-check text-success"></i> Interactive UI/UX Design</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <ul class="list-unstyled">
+                                        <li><i class="fas fa-check text-success"></i> Chart.js Data Visualization</li>
+                                        <li><i class="fas fa-check text-success"></i> Bootstrap Responsive Design</li>
+                                        <li><i class="fas fa-check text-success"></i> Business Logic Implementation</li>
+                                        <li><i class="fas fa-check text-success"></i> Modern JavaScript (ES6+)</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <h6 class="fw-bold mb-3">
+                                <i class="fas fa-rocket text-warning"></i> Key Features Implemented
+                            </h6>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <ul class="list-unstyled small">
+                                        <li>• Real-time inventory tracking</li>
+                                        <li>• AI-powered demand forecasting</li>
+                                        <li>• Interactive data visualizations</li>
+                                        <li>• Point-of-sale system</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <ul class="list-unstyled small">
+                                        <li>• Advanced analytics & reporting</li>
+                                        <li>• Automated reorder recommendations</li>
+                                        <li>• Multi-category product management</li>
+                                        <li>• Professional business workflows</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h6 class="fw-bold mb-3">
+                                <i class="fas fa-handshake text-success"></i> Let's Connect & Collaborate
+                            </h6>
+                            <p class="mb-3">
+                                I'm passionate about creating innovative solutions for businesses.
+                                If you're interested in custom software development, web applications,
+                                or have a project in mind, I'd love to hear from you!
+                            </p>
+
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <div class="card h-100 text-center" style="background: rgba(102, 126, 234, 0.1);">
+                                        <div class="card-body">
+                                            <i class="fas fa-phone-alt text-primary fs-3 mb-2"></i>
+                                            <h6 class="fw-bold">Call Me</h6>
+                                            <a href="tel:+212697362759" class="text-decoration-none">
+                                                +212 697 362 759
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <div class="card h-100 text-center" style="background: rgba(40, 167, 69, 0.1);">
+                                        <div class="card-body">
+                                            <i class="fas fa-envelope text-success fs-3 mb-2"></i>
+                                            <h6 class="fw-bold">Email Me</h6>
+                                            <a href="mailto:mustaphabaroudi833@gmail.com" class="text-decoration-none">
+                                                mustaphabaroudi833@gmail.com
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <div class="card h-100 text-center" style="background: rgba(0, 119, 181, 0.1);">
+                                        <div class="card-body">
+                                            <i class="fab fa-linkedin text-info fs-3 mb-2"></i>
+                                            <h6 class="fw-bold">LinkedIn</h6>
+                                            <a href="https://www.linkedin.com/in/baroudi-mustapha-2a257a289/"
+                                               target="_blank" class="text-decoration-none">
+                                                Professional Profile
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <a href="https://www.linkedin.com/in/baroudi-mustapha-2a257a289/"
+                       target="_blank" class="btn btn-primary">
+                        <i class="fab fa-linkedin"></i> View LinkedIn Profile
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Global variables
+        let products = [
+            {id: 1, name: 'Cotton Fabric - Blue', sku: 'CTN-BLU-001', category: 'Textiles', stock: 150, price: 25.50, cost: 18.00, status: 'Normal'},
+            {id: 2, name: 'LED Light Bulb 10W', sku: 'LED-10W-001', category: 'Electronics', stock: 5, price: 45.00, cost: 30.00, status: 'Low Stock'},
+            {id: 3, name: 'Office Chair Premium', sku: 'CHR-OFF-001', category: 'Office Supplies', stock: 0, price: 350.00, cost: 250.00, status: 'Out of Stock'},
+            {id: 4, name: 'Silk Fabric - Red', sku: 'SLK-RED-001', category: 'Textiles', stock: 75, price: 85.00, cost: 60.00, status: 'Normal'},
+            {id: 5, name: 'Wireless Mouse', sku: 'MSE-WRL-001', category: 'Electronics', stock: 8, price: 120.00, cost: 80.00, status: 'Low Stock'}
+        ];
+
+        // Page Navigation with smooth transitions
+        function showPage(pageId) {
+            // Hide all pages with fade out
+            document.querySelectorAll('.page-content').forEach(page => {
+                if (page.classList.contains('active')) {
+                    page.style.opacity = '0';
+                    page.style.transform = 'translateX(-30px)';
+                    setTimeout(() => {
+                        page.classList.remove('active');
+                    }, 300);
+                }
+            });
+
+            // Show target page with fade in
+            setTimeout(() => {
+                const targetPage = document.getElementById(pageId);
+                targetPage.classList.add('active');
+                targetPage.style.opacity = '0';
+                targetPage.style.transform = 'translateX(30px)';
+                
+                setTimeout(() => {
+                    targetPage.style.opacity = '1';
+                    targetPage.style.transform = 'translateX(0)';
+                }, 50);
+            }, 300);
+
+            // Update navbar
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            // Load page-specific content
+            if (pageId === 'products') {
+                loadProductsGrid();
+            }
+        }
+
+        // Load products grid
+        function loadProductsGrid() {
+            const grid = document.getElementById('productsGrid');
+            grid.innerHTML = '';
+
+            products.forEach((product, index) => {
+                const statusClass = product.status === 'Normal' ? 'success' : 
+                                  product.status === 'Low Stock' ? 'warning' : 'danger';
+                
+                const card = document.createElement('div');
+                card.className = 'col-md-6 col-lg-4 mb-4';
+                card.style.animationDelay = `${index * 0.1}s`;
+                card.innerHTML = `
+                    <div class="card h-100 product-card" onclick="showProductDetails(${product.id})">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <h5 class="fw-bold mb-0">${product.name}</h5>
+                                <span class="badge bg-${statusClass}">${product.status}</span>
+                            </div>
+                            <p class="text-muted mb-2">
+                                <i class="fas fa-barcode"></i> ${product.sku}
+                            </p>
+                            <p class="text-muted mb-3">
+                                <i class="fas fa-tag"></i> ${product.category}
+                            </p>
+                            <div class="row text-center mb-3">
+                                <div class="col-4">
+                                    <h6 class="fw-bold text-primary">${product.stock}</h6>
+                                    <small class="text-muted">Stock</small>
+                                </div>
+                                <div class="col-4">
+                                    <h6 class="fw-bold text-success">${product.price} MAD</h6>
+                                    <small class="text-muted">Price</small>
+                                </div>
+                                <div class="col-4">
+                                    <h6 class="fw-bold text-info">${(product.stock * product.cost).toFixed(2)} MAD</h6>
+                                    <small class="text-muted">Value</small>
+                                </div>
+                            </div>
+                            <button class="btn btn-outline-primary w-100" onclick="event.stopPropagation(); adjustProductStock(${product.id})">
+                                <i class="fas fa-boxes"></i> Adjust Stock
+                            </button>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // Show enhanced notifications
+        function showNotification(title, message, type = 'info', duration = 4000) {
+            const notification = document.createElement('div');
+            notification.className = `notification alert alert-${type} alert-dismissible fade show`;
+            notification.innerHTML = `
+                <div class="d-flex align-items-center">
+                    <div class="me-3">
+                        <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'warning' ? 'exclamation-triangle' : type === 'danger' ? 'times-circle' : 'info-circle'} fs-4"></i>
+                    </div>
+                    <div class="flex-grow-1">
+                        <h6 class="fw-bold mb-1">${title}</h6>
+                        <p class="mb-0">${message}</p>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            `;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.style.transform = 'translateX(100%)';
+                    notification.style.opacity = '0';
+                    setTimeout(() => notification.remove(), 300);
+                }
+            }, duration);
+        }
+
+        // Show metric details
+        function showMetricDetails(type) {
+            const details = {
+                products: {
+                    title: 'Product Overview',
+                    message: `You have 5 active products across 3 categories:<br>
+                             • Textiles: 2 products<br>
+                             • Electronics: 2 products<br>
+                             • Office Supplies: 1 product`
+                },
+                value: {
+                    title: 'Inventory Valuation',
+                    message: `Total inventory worth: 18,840.00 MAD<br>
+                             • Cost value: 18,840.00 MAD<br>
+                             • Retail value: 28,275.00 MAD<br>
+                             • Potential profit: 9,435.00 MAD`
+                },
+                sales: {
+                    title: 'Sales Performance',
+                    message: `23 sales in the last 7 days<br>
+                             • Average sale: 156.50 MAD<br>
+                             • Total revenue: 3,599.50 MAD<br>
+                             • Growth: +15% vs last week`
+                }
+            };
+            
+            const detail = details[type];
+            showNotification(detail.title, detail.message, 'info', 6000);
+        }
+
+        // Sale management
+        let saleItems = [];
+        let saleTotal = 0;
+
+        function showModal(modalId) {
+            new bootstrap.Modal(document.getElementById(modalId)).show();
+        }
+
+        function addProduct() {
+            const form = document.getElementById('addProductForm');
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+
+            const newProduct = {
+                id: products.length + 1,
+                name: document.getElementById('productName').value,
+                sku: document.getElementById('productSku').value,
+                category: document.getElementById('productCategory').value,
+                stock: parseInt(document.getElementById('productStock').value) || 0,
+                price: parseFloat(document.getElementById('productPrice').value),
+                cost: parseFloat(document.getElementById('productCost').value),
+                status: 'Normal'
+            };
+
+            products.push(newProduct);
+
+            // Update total products counter
+            document.getElementById('totalProducts').textContent = products.length;
+
+            // Refresh products grid if on products page
+            if (document.getElementById('products').classList.contains('active')) {
+                loadProductsGrid();
+            }
+
+            // Close modal and show success
+            bootstrap.Modal.getInstance(document.getElementById('addProductModal')).hide();
+            showNotification('Success!', `Product "${newProduct.name}" added successfully!`, 'success');
+
+            // Reset form
+            form.reset();
+        }
+
+        function addSaleItem() {
+            const productId = document.getElementById('saleProduct').value;
+            const quantity = parseInt(document.getElementById('saleQuantity').value);
+
+            if (!productId || !quantity) {
+                showNotification('Error', 'Please select a product and enter quantity', 'danger');
+                return;
+            }
+
+            const product = products.find(p => p.id == productId);
+            if (!product) return;
+
+            if (quantity > product.stock) {
+                showNotification('Error', `Only ${product.stock} units available in stock`, 'danger');
+                return;
+            }
+
+            const existingItem = saleItems.find(item => item.productId == productId);
+            if (existingItem) {
+                existingItem.quantity += quantity;
+                existingItem.total = existingItem.quantity * existingItem.price;
+            } else {
+                saleItems.push({
+                    productId: productId,
+                    name: product.name,
+                    quantity: quantity,
+                    price: product.price,
+                    total: quantity * product.price
+                });
+            }
+
+            updateSaleItemsList();
+            updateSaleTotal();
+
+            // Reset inputs
+            document.getElementById('saleProduct').value = '';
+            document.getElementById('saleQuantity').value = '';
+        }
+
+        function updateSaleItemsList() {
+            const tbody = document.getElementById('saleItemsList');
+
+            if (saleItems.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-3">No items added yet</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = saleItems.map((item, index) => `
+                <tr>
+                    <td><strong>${item.name}</strong></td>
+                    <td>${item.quantity}</td>
+                    <td>${item.price.toFixed(2)} MAD</td>
+                    <td class="fw-bold">${item.total.toFixed(2)} MAD</td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-danger" onclick="removeSaleItem(${index})">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function removeSaleItem(index) {
+            saleItems.splice(index, 1);
+            updateSaleItemsList();
+            updateSaleTotal();
+        }
+
+        function updateSaleTotal() {
+            const subtotal = saleItems.reduce((sum, item) => sum + item.total, 0);
+            const tax = subtotal * 0.2; // 20% tax
+            const total = subtotal + tax;
+
+            document.getElementById('saleSubtotal').textContent = subtotal.toFixed(2) + ' MAD';
+            document.getElementById('saleTax').textContent = tax.toFixed(2) + ' MAD';
+            document.getElementById('saleTotal').textContent = total.toFixed(2) + ' MAD';
+
+            // Enable/disable process button
+            document.getElementById('processSaleBtn').disabled = saleItems.length === 0;
+
+            saleTotal = total;
+        }
+
+        function processSale() {
+            if (saleItems.length === 0) return;
+
+            const customerName = document.getElementById('customerName').value || 'Walk-in Customer';
+
+            // Update product stocks
+            saleItems.forEach(item => {
+                const product = products.find(p => p.id == item.productId);
+                if (product) {
+                    product.stock -= item.quantity;
+                    // Update status based on new stock
+                    if (product.stock === 0) product.status = 'Out of Stock';
+                    else if (product.stock <= 10) product.status = 'Low Stock';
+                    else product.status = 'Normal';
+                }
+            });
+
+            // Generate sale number
+            const saleNumber = '#' + new Date().toISOString().slice(0,10).replace(/-/g,'') +
+                              Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+
+            // Close modal and show success
+            bootstrap.Modal.getInstance(document.getElementById('newSaleModal')).hide();
+            showNotification('Sale Completed!',
+                `Sale ${saleNumber} processed successfully!<br>
+                Customer: ${customerName}<br>
+                Total: ${saleTotal.toFixed(2)} MAD`, 'success', 6000);
+
+            // Reset sale
+            saleItems = [];
+            saleTotal = 0;
+            updateSaleItemsList();
+            updateSaleTotal();
+            document.getElementById('customerName').value = '';
+            document.getElementById('customerEmail').value = '';
+            document.getElementById('customerPhone').value = '';
+
+            // Refresh products grid if visible
+            if (document.getElementById('products').classList.contains('active')) {
+                loadProductsGrid();
+            }
+        }
+
+        // Inventory functions
+        function showBulkAdjustment() {
+            const content = `
+                <div class="row">
+                    <div class="col-12">
+                        <h5 class="fw-bold mb-4">Bulk Stock Adjustment</h5>
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Product</th>
+                                        <th>Current Stock</th>
+                                        <th>Adjustment</th>
+                                        <th>New Stock</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${products.map(product => `
+                                        <tr>
+                                            <td><strong>${product.name}</strong><br><small class="text-muted">${product.sku}</small></td>
+                                            <td class="fw-bold">${product.stock}</td>
+                                            <td>
+                                                <input type="number" class="form-control form-control-sm"
+                                                       placeholder="0" style="width: 80px;"
+                                                       onchange="updateNewStock(this, ${product.stock})">
+                                            </td>
+                                            <td class="fw-bold text-primary" id="newStock${product.id}">${product.stock}</td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="text-center mt-4">
+                            <button class="btn btn-primary btn-lg" onclick="applyBulkAdjustment()">
+                                <i class="fas fa-save"></i> Apply Adjustments
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            showReportModal('Bulk Stock Adjustment', content);
+        }
+
+        function showReorderReport() {
+            const lowStockProducts = products.filter(p => p.stock <= 10);
+            const content = `
+                <div class="row">
+                    <div class="col-12">
+                        <h5 class="fw-bold mb-4">Reorder Recommendations</h5>
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i>
+                            Products with stock levels at or below reorder point (10 units)
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Product</th>
+                                        <th>Current Stock</th>
+                                        <th>Recommended Order</th>
+                                        <th>Estimated Cost</th>
+                                        <th>Priority</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${lowStockProducts.map(product => {
+                                        const recommendedOrder = Math.max(50 - product.stock, 20);
+                                        const estimatedCost = recommendedOrder * product.cost;
+                                        const priority = product.stock === 0 ? 'Critical' : product.stock <= 5 ? 'High' : 'Medium';
+                                        const priorityClass = priority === 'Critical' ? 'danger' : priority === 'High' ? 'warning' : 'info';
+
+                                        return `
+                                            <tr>
+                                                <td><strong>${product.name}</strong><br><small class="text-muted">${product.sku}</small></td>
+                                                <td class="fw-bold">${product.stock}</td>
+                                                <td class="text-primary fw-bold">${recommendedOrder} units</td>
+                                                <td class="text-success fw-bold">${estimatedCost.toFixed(2)} MAD</td>
+                                                <td><span class="badge bg-${priorityClass}">${priority}</span></td>
+                                            </tr>
+                                        `;
+                                    }).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="row mt-4">
+                            <div class="col-md-6">
+                                <div class="card bg-light">
+                                    <div class="card-body text-center">
+                                        <h4 class="text-primary">${lowStockProducts.length}</h4>
+                                        <p class="mb-0">Products Need Reorder</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card bg-light">
+                                    <div class="card-body text-center">
+                                        <h4 class="text-success">${lowStockProducts.reduce((sum, p) => sum + (Math.max(50 - p.stock, 20) * p.cost), 0).toFixed(2)} MAD</h4>
+                                        <p class="mb-0">Total Estimated Cost</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            showReportModal('Reorder Report', content);
+        }
+
+        function showLowStockReport() {
+            const lowStockProducts = products.filter(p => p.stock <= 10);
+            const content = `
+                <div class="row">
+                    <div class="col-12">
+                        <h5 class="fw-bold mb-4">Low Stock Items</h5>
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            ${lowStockProducts.length} products require immediate attention
+                        </div>
+                        <div class="row">
+                            ${lowStockProducts.map(product => `
+                                <div class="col-md-6 mb-3">
+                                    <div class="card border-${product.stock === 0 ? 'danger' : 'warning'}">
+                                        <div class="card-body">
+                                            <div class="d-flex justify-content-between align-items-start">
+                                                <div>
+                                                    <h6 class="fw-bold">${product.name}</h6>
+                                                    <p class="text-muted mb-1">${product.sku}</p>
+                                                    <p class="mb-2"><span class="badge bg-secondary">${product.category}</span></p>
+                                                </div>
+                                                <span class="badge bg-${product.stock === 0 ? 'danger' : 'warning'} fs-6">
+                                                    ${product.stock} units
+                                                </span>
+                                            </div>
+                                            <div class="row text-center mt-3">
+                                                <div class="col-6">
+                                                    <small class="text-muted">Unit Price</small>
+                                                    <p class="fw-bold mb-0">${product.price.toFixed(2)} MAD</p>
+                                                </div>
+                                                <div class="col-6">
+                                                    <small class="text-muted">Value</small>
+                                                    <p class="fw-bold mb-0">${(product.stock * product.cost).toFixed(2)} MAD</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+            showReportModal('Low Stock Items', content);
+        }
+
+        function showValuationReport() {
+            const totalCostValue = products.reduce((sum, p) => sum + (p.stock * p.cost), 0);
+            const totalRetailValue = products.reduce((sum, p) => sum + (p.stock * p.price), 0);
+            const potentialProfit = totalRetailValue - totalCostValue;
+
+            const content = `
+                <div class="row">
+                    <div class="col-12">
+                        <h5 class="fw-bold mb-4">Inventory Valuation Report</h5>
+
+                        <!-- Summary Cards -->
+                        <div class="row mb-4">
+                            <div class="col-md-4">
+                                <div class="card bg-primary text-white">
+                                    <div class="card-body text-center">
+                                        <h3 class="fw-bold">${totalCostValue.toFixed(2)} MAD</h3>
+                                        <p class="mb-0">Cost Value</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card bg-success text-white">
+                                    <div class="card-body text-center">
+                                        <h3 class="fw-bold">${totalRetailValue.toFixed(2)} MAD</h3>
+                                        <p class="mb-0">Retail Value</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card bg-info text-white">
+                                    <div class="card-body text-center">
+                                        <h3 class="fw-bold">${potentialProfit.toFixed(2)} MAD</h3>
+                                        <p class="mb-0">Potential Profit</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Detailed Breakdown -->
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Product</th>
+                                        <th>Stock</th>
+                                        <th>Cost Price</th>
+                                        <th>Retail Price</th>
+                                        <th>Cost Value</th>
+                                        <th>Retail Value</th>
+                                        <th>Profit Margin</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${products.map(product => {
+                                        const costValue = product.stock * product.cost;
+                                        const retailValue = product.stock * product.price;
+                                        const profitMargin = ((product.price - product.cost) / product.cost * 100).toFixed(1);
+
+                                        return `
+                                            <tr>
+                                                <td><strong>${product.name}</strong><br><small class="text-muted">${product.sku}</small></td>
+                                                <td class="fw-bold">${product.stock}</td>
+                                                <td>${product.cost.toFixed(2)} MAD</td>
+                                                <td>${product.price.toFixed(2)} MAD</td>
+                                                <td class="text-primary fw-bold">${costValue.toFixed(2)} MAD</td>
+                                                <td class="text-success fw-bold">${retailValue.toFixed(2)} MAD</td>
+                                                <td><span class="badge bg-info">${profitMargin}%</span></td>
+                                            </tr>
+                                        `;
+                                    }).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            `;
+            showReportModal('Inventory Valuation Report', content);
+        }
+
+        // Report generation functions
+        function generateSalesReport() {
+            const content = `
+                <div class="row">
+                    <div class="col-12">
+                        <h5 class="fw-bold mb-4">Sales Performance Report</h5>
+
+                        <!-- Performance Metrics -->
+                        <div class="row mb-4">
+                            <div class="col-md-3">
+                                <div class="card bg-success text-white">
+                                    <div class="card-body text-center">
+                                        <h4 class="fw-bold">32,500 MAD</h4>
+                                        <p class="mb-0">Monthly Revenue</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card bg-primary text-white">
+                                    <div class="card-body text-center">
+                                        <h4 class="fw-bold">234</h4>
+                                        <p class="mb-0">Total Sales</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card bg-info text-white">
+                                    <div class="card-body text-center">
+                                        <h4 class="fw-bold">138.89 MAD</h4>
+                                        <p class="mb-0">Average Sale</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card bg-warning text-dark">
+                                    <div class="card-body text-center">
+                                        <h4 class="fw-bold">23.5%</h4>
+                                        <p class="mb-0">Profit Margin</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Top Products -->
+                        <h6 class="fw-bold mb-3">Top Selling Products</h6>
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Rank</th>
+                                        <th>Product</th>
+                                        <th>Units Sold</th>
+                                        <th>Revenue</th>
+                                        <th>Profit</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><span class="badge bg-warning fs-6">1</span></td>
+                                        <td><strong>Cotton Fabric - Blue</strong></td>
+                                        <td class="fw-bold">145 units</td>
+                                        <td class="text-success fw-bold">3,697.50 MAD</td>
+                                        <td class="text-primary fw-bold">1,087.50 MAD</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="badge bg-secondary fs-6">2</span></td>
+                                        <td><strong>Silk Fabric - Red</strong></td>
+                                        <td class="fw-bold">89 units</td>
+                                        <td class="text-success fw-bold">7,565.00 MAD</td>
+                                        <td class="text-primary fw-bold">2,225.00 MAD</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="badge bg-secondary fs-6">3</span></td>
+                                        <td><strong>LED Light Bulb 10W</strong></td>
+                                        <td class="fw-bold">67 units</td>
+                                        <td class="text-success fw-bold">3,015.00 MAD</td>
+                                        <td class="text-primary fw-bold">1,005.00 MAD</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            `;
+            showReportModal('Sales Performance Report', content);
+        }
+
+        function generateInventoryReport() {
+            showValuationReport(); // Reuse the valuation report
+        }
+
+        function generateForecastReport() {
+            const content = `
+                <div class="row">
+                    <div class="col-12">
+                        <h5 class="fw-bold mb-4">30-Day Demand Forecast</h5>
+
+                        <div class="alert alert-info">
+                            <i class="fas fa-robot"></i>
+                            AI-powered demand predictions based on historical sales data and seasonal patterns
+                        </div>
+
+                        <!-- Forecast Summary -->
+                        <div class="row mb-4">
+                            <div class="col-md-4">
+                                <div class="card bg-primary text-white">
+                                    <div class="card-body text-center">
+                                        <h4 class="fw-bold">12,450 MAD</h4>
+                                        <p class="mb-0">Predicted Revenue</p>
+                                        <small class="opacity-75">Next 30 days</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card bg-success text-white">
+                                    <div class="card-body text-center">
+                                        <h4 class="fw-bold">89</h4>
+                                        <p class="mb-0">Expected Sales</p>
+                                        <small class="opacity-75">Transactions</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card bg-info text-white">
+                                    <div class="card-body text-center">
+                                        <h4 class="fw-bold">92%</h4>
+                                        <p class="mb-0">Forecast Accuracy</p>
+                                        <small class="opacity-75">Based on history</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Product Forecasts -->
+                        <h6 class="fw-bold mb-3">Product Demand Predictions</h6>
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Product</th>
+                                        <th>Current Stock</th>
+                                        <th>Predicted Demand</th>
+                                        <th>Stock Coverage</th>
+                                        <th>Recommendation</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${products.map(product => {
+                                        const predictedDemand = Math.floor(Math.random() * 50) + 10;
+                                        const stockCoverage = Math.floor(product.stock / predictedDemand * 30);
+                                        const recommendation = stockCoverage < 15 ? 'Reorder Soon' :
+                                                             stockCoverage < 30 ? 'Monitor' : 'Sufficient';
+                                        const recClass = recommendation === 'Reorder Soon' ? 'danger' :
+                                                        recommendation === 'Monitor' ? 'warning' : 'success';
+
+                                        return `
+                                            <tr>
+                                                <td><strong>${product.name}</strong><br><small class="text-muted">${product.sku}</small></td>
+                                                <td class="fw-bold">${product.stock}</td>
+                                                <td class="text-primary fw-bold">${predictedDemand} units</td>
+                                                <td class="fw-bold">${stockCoverage} days</td>
+                                                <td><span class="badge bg-${recClass}">${recommendation}</span></td>
+                                            </tr>
+                                        `;
+                                    }).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Interactive Forecast Chart -->
+                        <div class="card mt-4">
+                            <div class="card-header bg-transparent">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h6 class="fw-bold mb-0">
+                                        <i class="fas fa-chart-line text-primary"></i> 30-Day Demand Forecast
+                                    </h6>
+                                    <div class="btn-group btn-group-sm">
+                                        <button class="btn btn-outline-primary active" onclick="updateForecastChart('all')">All Products</button>
+                                        <button class="btn btn-outline-primary" onclick="updateForecastChart('textiles')">Textiles</button>
+                                        <button class="btn btn-outline-primary" onclick="updateForecastChart('electronics')">Electronics</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div style="height: 400px; position: relative;">
+                                    <canvas id="demandForecastChart"></canvas>
+                                </div>
+                                <div class="row mt-3">
+                                    <div class="col-md-4 text-center">
+                                        <div class="p-3 rounded" style="background: rgba(102, 126, 234, 0.1);">
+                                            <h6 class="fw-bold text-primary mb-1">Historical Trend</h6>
+                                            <small class="text-muted">Last 30 days actual sales</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 text-center">
+                                        <div class="p-3 rounded" style="background: rgba(40, 167, 69, 0.1);">
+                                            <h6 class="fw-bold text-success mb-1">AI Forecast</h6>
+                                            <small class="text-muted">Next 30 days prediction</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 text-center">
+                                        <div class="p-3 rounded" style="background: rgba(255, 193, 7, 0.1);">
+                                            <h6 class="fw-bold text-warning mb-1">Confidence Band</h6>
+                                            <small class="text-muted">Prediction accuracy range</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            showReportModal('Demand Forecast Report', content);
+
+            // Initialize chart after modal is shown
+            setTimeout(() => {
+                initializeDemandChart();
+            }, 500);
+        }
+
+        function showReportModal(title, content) {
+            document.getElementById('reportModalTitle').innerHTML = `<i class="fas fa-chart-bar text-primary"></i> ${title}`;
+            document.getElementById('reportModalBody').innerHTML = content;
+            new bootstrap.Modal(document.getElementById('reportModal')).show();
+        }
+
+        function exportReport() {
+            showNotification('Export Started', 'Report is being exported to PDF format...', 'info');
+            setTimeout(() => {
+                showNotification('Export Complete', 'Report has been downloaded successfully!', 'success');
+            }, 2000);
+        }
+
+        function showProductDetails(productId) {
+            const product = products.find(p => p.id === productId);
+            if (!product) return;
+
+            const profitMargin = ((product.price - product.cost) / product.cost * 100).toFixed(1);
+            const inventoryValue = (product.stock * product.cost).toFixed(2);
+
+            showNotification('Product Details',
+                `<strong>${product.name}</strong> (${product.sku})<br>
+                Category: ${product.category}<br>
+                Stock: ${product.stock} units<br>
+                Unit Price: ${product.price.toFixed(2)} MAD<br>
+                Cost Price: ${product.cost.toFixed(2)} MAD<br>
+                Inventory Value: ${inventoryValue} MAD<br>
+                Profit Margin: ${profitMargin}%<br>
+                Status: <span class="badge bg-${product.status === 'Normal' ? 'success' : product.status === 'Low Stock' ? 'warning' : 'danger'}">${product.status}</span>`,
+                'info', 8000);
+        }
+
+        function adjustProductStock(productId) {
+            const product = products.find(p => p.id === productId);
+            if (!product) return;
+
+            const adjustment = prompt(`Adjust stock for ${product.name}\nCurrent stock: ${product.stock}\nEnter adjustment (+/-):`, '0');
+            if (adjustment === null) return;
+
+            const adjustmentValue = parseInt(adjustment);
+            if (isNaN(adjustmentValue)) {
+                showNotification('Error', 'Please enter a valid number', 'danger');
+                return;
+            }
+
+            const newStock = Math.max(0, product.stock + adjustmentValue);
+            product.stock = newStock;
+
+            // Update status
+            if (newStock === 0) product.status = 'Out of Stock';
+            else if (newStock <= 10) product.status = 'Low Stock';
+            else product.status = 'Normal';
+
+            showNotification('Stock Updated',
+                `${product.name} stock adjusted by ${adjustmentValue}<br>
+                New stock level: ${newStock} units`, 'success');
+
+            // Refresh products grid
+            if (document.getElementById('products').classList.contains('active')) {
+                loadProductsGrid();
+            }
+        }
+
+        function showStockAdjustment() {
+            showBulkAdjustment();
+        }
+
+        function showSaleDetails(saleNumber) {
+            showNotification('Sale Details',
+                `Sale ${saleNumber}<br>
+                Date: Dec 5, 2024 14:30<br>
+                Customer: Ahmed Hassan<br>
+                Items: 2 products<br>
+                Total: 127.50 MAD<br>
+                Status: Paid<br>
+                Payment: Cash`, 'info', 6000);
+        }
+
+        function printReceipt(saleNumber) {
+            showNotification('Receipt', `Receipt for sale ${saleNumber} sent to printer`, 'success');
+        }
+
+        function markPaid(saleNumber) {
+            showNotification('Payment Updated', `Sale ${saleNumber} marked as paid`, 'success');
+        }
+
+        // Show developer information
+        function showDeveloperInfo() {
+            new bootstrap.Modal(document.getElementById('developerModal')).show();
+        }
+
+        // Chart variables
+        let demandChart = null;
+
+        // Generate realistic forecast data
+        function generateForecastData(category = 'all') {
+            const today = new Date();
+            const labels = [];
+            const historicalData = [];
+            const forecastData = [];
+            const confidenceUpper = [];
+            const confidenceLower = [];
+
+            // Generate last 30 days (historical)
+            for (let i = 29; i >= 0; i--) {
+                const date = new Date(today);
+                date.setDate(date.getDate() - i);
+                labels.push(date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+
+                // Generate realistic historical data with some seasonality
+                const baseValue = category === 'textiles' ? 150 : category === 'electronics' ? 80 : 120;
+                const seasonality = Math.sin((i / 30) * Math.PI * 2) * 20;
+                const randomVariation = (Math.random() - 0.5) * 30;
+                const weekendEffect = date.getDay() === 0 || date.getDay() === 6 ? -15 : 0;
+
+                historicalData.push(Math.max(0, baseValue + seasonality + randomVariation + weekendEffect));
+            }
+
+            // Generate next 30 days (forecast)
+            for (let i = 1; i <= 30; i++) {
+                const date = new Date(today);
+                date.setDate(date.getDate() + i);
+                labels.push(date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+
+                // Generate forecast with trend
+                const lastHistorical = historicalData[historicalData.length - 1];
+                const trend = category === 'textiles' ? 1.02 : category === 'electronics' ? 1.05 : 1.03;
+                const baseValue = lastHistorical * Math.pow(trend, i / 30);
+                const seasonality = Math.sin(((30 + i) / 30) * Math.PI * 2) * 15;
+                const randomVariation = (Math.random() - 0.5) * 10;
+
+                const forecastValue = Math.max(0, baseValue + seasonality + randomVariation);
+                forecastData.push(forecastValue);
+
+                // Confidence intervals (wider as we go further into future)
+                const confidenceWidth = 10 + (i / 30) * 20;
+                confidenceUpper.push(forecastValue + confidenceWidth);
+                confidenceLower.push(Math.max(0, forecastValue - confidenceWidth));
+            }
+
+            return {
+                labels,
+                historical: historicalData,
+                forecast: forecastData,
+                confidenceUpper,
+                confidenceLower
+            };
+        }
+
+        // Initialize demand forecast chart
+        function initializeDemandChart() {
+            const ctx = document.getElementById('demandForecastChart');
+            if (!ctx) return;
+
+            const data = generateForecastData('all');
+
+            // Create gradient fills
+            const gradient1 = ctx.getContext('2d').createLinearGradient(0, 0, 0, 400);
+            gradient1.addColorStop(0, 'rgba(102, 126, 234, 0.3)');
+            gradient1.addColorStop(1, 'rgba(102, 126, 234, 0.05)');
+
+            const gradient2 = ctx.getContext('2d').createLinearGradient(0, 0, 0, 400);
+            gradient2.addColorStop(0, 'rgba(40, 167, 69, 0.3)');
+            gradient2.addColorStop(1, 'rgba(40, 167, 69, 0.05)');
+
+            const gradient3 = ctx.getContext('2d').createLinearGradient(0, 0, 0, 400);
+            gradient3.addColorStop(0, 'rgba(255, 193, 7, 0.2)');
+            gradient3.addColorStop(1, 'rgba(255, 193, 7, 0.05)');
+
+            demandChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.labels,
+                    datasets: [
+                        {
+                            label: 'Confidence Upper',
+                            data: [...Array(30).fill(null), ...data.confidenceUpper],
+                            borderColor: 'rgba(255, 193, 7, 0.3)',
+                            backgroundColor: 'transparent',
+                            borderWidth: 0,
+                            fill: '+1',
+                            pointRadius: 0,
+                            tension: 0.4
+                        },
+                        {
+                            label: 'Confidence Lower',
+                            data: [...Array(30).fill(null), ...data.confidenceLower],
+                            borderColor: 'rgba(255, 193, 7, 0.3)',
+                            backgroundColor: gradient3,
+                            borderWidth: 0,
+                            fill: false,
+                            pointRadius: 0,
+                            tension: 0.4
+                        },
+                        {
+                            label: 'Historical Sales',
+                            data: [...data.historical, ...Array(30).fill(null)],
+                            borderColor: '#667eea',
+                            backgroundColor: gradient1,
+                            borderWidth: 3,
+                            fill: true,
+                            pointBackgroundColor: '#667eea',
+                            pointBorderColor: '#ffffff',
+                            pointBorderWidth: 2,
+                            pointRadius: 4,
+                            pointHoverRadius: 6,
+                            tension: 0.4
+                        },
+                        {
+                            label: 'AI Forecast',
+                            data: [...Array(29).fill(null), data.historical[29], ...data.forecast],
+                            borderColor: '#28a745',
+                            backgroundColor: gradient2,
+                            borderWidth: 3,
+                            borderDash: [5, 5],
+                            fill: true,
+                            pointBackgroundColor: '#28a745',
+                            pointBorderColor: '#ffffff',
+                            pointBorderWidth: 2,
+                            pointRadius: 4,
+                            pointHoverRadius: 6,
+                            tension: 0.4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        intersect: false,
+                        mode: 'index'
+                    },
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top',
+                            labels: {
+                                usePointStyle: true,
+                                padding: 20,
+                                font: {
+                                    family: 'Inter',
+                                    size: 12,
+                                    weight: '500'
+                                },
+                                filter: function(legendItem) {
+                                    return !legendItem.text.includes('Confidence');
+                                }
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                            titleColor: '#333',
+                            bodyColor: '#666',
+                            borderColor: '#ddd',
+                            borderWidth: 1,
+                            cornerRadius: 10,
+                            displayColors: true,
+                            titleFont: {
+                                family: 'Inter',
+                                size: 14,
+                                weight: '600'
+                            },
+                            bodyFont: {
+                                family: 'Inter',
+                                size: 12
+                            },
+                            callbacks: {
+                                title: function(context) {
+                                    const index = context[0].dataIndex;
+                                    return index < 30 ? 'Historical: ' + context[0].label : 'Forecast: ' + context[0].label;
+                                },
+                                label: function(context) {
+                                    if (context.dataset.label.includes('Confidence')) return null;
+                                    return context.dataset.label + ': ' + Math.round(context.parsed.y) + ' units';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                display: true,
+                                color: 'rgba(0, 0, 0, 0.05)'
+                            },
+                            ticks: {
+                                font: {
+                                    family: 'Inter',
+                                    size: 11
+                                },
+                                maxTicksLimit: 10
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                display: true,
+                                color: 'rgba(0, 0, 0, 0.05)'
+                            },
+                            ticks: {
+                                font: {
+                                    family: 'Inter',
+                                    size: 11
+                                },
+                                callback: function(value) {
+                                    return Math.round(value) + ' units';
+                                }
+                            }
+                        }
+                    },
+                    animation: {
+                        duration: 2000,
+                        easing: 'easeInOutQuart'
+                    },
+                    elements: {
+                        point: {
+                            hoverBackgroundColor: '#ffffff',
+                            hoverBorderWidth: 3
+                        }
+                    }
+                }
+            });
+        }
+
+        // Update forecast chart based on category
+        function updateForecastChart(category) {
+            if (!demandChart) return;
+
+            // Update button states
+            document.querySelectorAll('.btn-group .btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            const data = generateForecastData(category);
+
+            // Update chart data with animation
+            demandChart.data.labels = data.labels;
+            demandChart.data.datasets[0].data = [...Array(30).fill(null), ...data.confidenceUpper];
+            demandChart.data.datasets[1].data = [...Array(30).fill(null), ...data.confidenceLower];
+            demandChart.data.datasets[2].data = [...data.historical, ...Array(30).fill(null)];
+            demandChart.data.datasets[3].data = [...Array(29).fill(null), data.historical[29], ...data.forecast];
+
+            demandChart.update('active');
+
+            // Show notification about the update
+            const categoryName = category === 'all' ? 'All Products' :
+                                category === 'textiles' ? 'Textiles' : 'Electronics';
+            showNotification('Chart Updated', `Showing demand forecast for ${categoryName}`, 'info', 3000);
+        }
+
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', function() {
+            showNotification('Welcome to SIMS Pro!', 'Your smart inventory management system is ready. Click anywhere to explore!', 'success');
+            loadProductsGrid();
+
+            // Initialize chart when forecast report is first opened
+            setTimeout(() => {
+                if (document.getElementById('demandForecastChart')) {
+                    initializeDemandChart();
+                }
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

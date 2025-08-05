@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIMS - Interactive Demo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #f8f9fa; }
+        .card { 
+            border: none; 
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+            transition: all 0.3s ease;
+        }
+        .card:hover { 
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+            transform: translateY(-2px);
+        }
+        .navbar-brand { font-weight: 600; }
+        .metric-card { 
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .metric-card:hover { 
+            transform: translateY(-5px) scale(1.02);
+        }
+        .btn { transition: all 0.2s ease; }
+        .btn:hover { transform: translateY(-1px); }
+        .table-row { cursor: pointer; transition: all 0.2s ease; }
+        .table-row:hover { background-color: rgba(0,123,255,0.1) !important; }
+        .nav-link { cursor: pointer; }
+        .page-content { display: none; }
+        .page-content.active { display: block; }
+        .modal { z-index: 1050; }
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            min-width: 300px;
+        }
+        .demo-badge { 
+            position: fixed; 
+            top: 70px; 
+            right: 20px; 
+            z-index: 1000;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-badge">
+        <span class="badge bg-success fs-6">
+            <i class="fas fa-mouse-pointer"></i> INTERACTIVE DEMO
+        </span>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#" onclick="showPage('dashboard')">
+                <i class="fas fa-boxes"></i> SIMS - Smart Inventory Management
+            </a>
+            
+            <div class="navbar-nav me-auto">
+                <a class="nav-link" onclick="showPage('dashboard')">
+                    <i class="fas fa-tachometer-alt"></i> Dashboard
+                </a>
+                <a class="nav-link" onclick="showPage('products')">
+                    <i class="fas fa-box"></i> Products
+                </a>
+                <a class="nav-link" onclick="showPage('inventory')">
+                    <i class="fas fa-warehouse"></i> Inventory
+                </a>
+                <a class="nav-link" onclick="showPage('sales')">
+                    <i class="fas fa-shopping-cart"></i> Sales
+                </a>
+                <a class="nav-link" onclick="showPage('analytics')">
+                    <i class="fas fa-chart-bar"></i> Analytics
+                </a>
+            </div>
+            
+            <div class="navbar-nav">
+                <span class="navbar-text text-light">
+                    <i class="fas fa-flag"></i> Made for Morocco 🇲🇦
+                </span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Dashboard Page -->
+    <div id="dashboard" class="page-content active">
+        <div class="container-fluid py-4">
+            <div class="row mb-4">
+                <div class="col-12">
+                    <h1><i class="fas fa-tachometer-alt text-primary"></i> Dashboard</h1>
+                    <p class="text-muted">Real-time inventory overview</p>
+                </div>
+            </div>
+
+            <!-- Metrics Cards -->
+            <div class="row mb-4">
+                <div class="col-md-3 mb-3">
+                    <div class="card bg-primary text-white metric-card" onclick="showNotification('Total Products', 'You have 5 active products in your inventory')">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h3 class="mb-1">5</h3>
+                                    <p class="mb-0">Total Products</p>
+                                </div>
+                                <div class="align-self-center">
+                                    <i class="fas fa-box fa-3x opacity-75"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="card bg-success text-white metric-card" onclick="showNotification('Inventory Value', 'Total inventory worth: 18,840.00 MAD')">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h3 class="mb-1">18,840 MAD</h3>
+                                    <p class="mb-0">Inventory Value</p>
+                                </div>
+                                <div class="align-self-center">
+                                    <i class="fas fa-coins fa-3x opacity-75"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="card bg-info text-white metric-card" onclick="showNotification('Recent Sales', '23 sales transactions in the last 7 days')">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h3 class="mb-1">23</h3>
+                                    <p class="mb-0">Sales (7 days)</p>
+                                </div>
+                                <div class="align-self-center">
+                                    <i class="fas fa-shopping-cart fa-3x opacity-75"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="card bg-warning text-dark metric-card" onclick="showPage('products')">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h3 class="mb-1">2</h3>
+                                    <p class="mb-0">Low Stock Items</p>
+                                </div>
+                                <div class="align-self-center">
+                                    <i class="fas fa-exclamation-triangle fa-3x opacity-75"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5><i class="fas fa-bolt"></i> Quick Actions</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-3 mb-2">
+                                    <button class="btn btn-primary w-100" onclick="showModal('addProductModal')">
+                                        <i class="fas fa-plus"></i> Add Product
+                                    </button>
+                                </div>
+                                <div class="col-md-3 mb-2">
+                                    <button class="btn btn-success w-100" onclick="showModal('newSaleModal')">
+                                        <i class="fas fa-shopping-cart"></i> New Sale
+                                    </button>
+                                </div>
+                                <div class="col-md-3 mb-2">
+                                    <button class="btn btn-warning w-100" onclick="showPage('inventory')">
+                                        <i class="fas fa-boxes"></i> Stock Adjustment
+                                    </button>
+                                </div>
+                                <div class="col-md-3 mb-2">
+                                    <button class="btn btn-info w-100" onclick="showPage('analytics')">
+                                        <i class="fas fa-chart-line"></i> View Reports
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5><i class="fas fa-history"></i> Recent Activity</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="list-group list-group-flush">
+                                <div class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <i class="fas fa-shopping-cart text-success"></i>
+                                        <strong>Sale #20241205001</strong> - Cotton Fabric sold (5 units)
+                                    </div>
+                                    <small class="text-muted">2 hours ago</small>
+                                </div>
+                                <div class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <i class="fas fa-truck text-primary"></i>
+                                        <strong>Stock Received</strong> - LED Bulbs restocked (50 units)
+                                    </div>
+                                    <small class="text-muted">1 day ago</small>
+                                </div>
+                                <div class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <i class="fas fa-exclamation-triangle text-warning"></i>
+                                        <strong>Low Stock Alert</strong> - Wireless Mouse needs reorder
+                                    </div>
+                                    <small class="text-muted">2 days ago</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Products Page -->
+    <div id="products" class="page-content">
+        <div class="container-fluid py-4">
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h1><i class="fas fa-box text-primary"></i> Products</h1>
+                        <button class="btn btn-primary" onclick="showModal('addProductModal')">
+                            <i class="fas fa-plus"></i> Add Product
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Products Table -->
+            <div class="card">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Category</th>
+                                    <th>Stock</th>
+                                    <th>Price</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="table-row" onclick="showProductDetails('Cotton Fabric - Blue', 'CTN-BLU-001', 150, 25.50, 18.00)">
+                                    <td>
+                                        <strong>Cotton Fabric - Blue</strong><br>
+                                        <small class="text-muted">CTN-BLU-001</small>
+                                    </td>
+                                    <td><span class="badge bg-secondary">Textiles</span></td>
+                                    <td><strong>150</strong> units</td>
+                                    <td><strong>25.50 MAD</strong></td>
+                                    <td><span class="badge bg-success">Normal</span></td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-primary" onclick="event.stopPropagation(); showModal('stockModal', 'Cotton Fabric - Blue', 150)">
+                                            <i class="fas fa-boxes"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr class="table-row" onclick="showProductDetails('LED Light Bulb 10W', 'LED-10W-001', 5, 45.00, 30.00)">
+                                    <td>
+                                        <strong>LED Light Bulb 10W</strong><br>
+                                        <small class="text-muted">LED-10W-001</small>
+                                    </td>
+                                    <td><span class="badge bg-secondary">Electronics</span></td>
+                                    <td><strong>5</strong> units</td>
+                                    <td><strong>45.00 MAD</strong></td>
+                                    <td><span class="badge bg-warning text-dark">Low Stock</span></td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-primary" onclick="event.stopPropagation(); showModal('stockModal', 'LED Light Bulb 10W', 5)">
+                                            <i class="fas fa-boxes"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr class="table-row" onclick="showProductDetails('Office Chair Premium', 'CHR-OFF-001', 0, 350.00, 250.00)">
+                                    <td>
+                                        <strong>Office Chair Premium</strong><br>
+                                        <small class="text-muted">CHR-OFF-001</small>
+                                    </td>
+                                    <td><span class="badge bg-secondary">Office Supplies</span></td>
+                                    <td><strong>0</strong> units</td>
+                                    <td><strong>350.00 MAD</strong></td>
+                                    <td><span class="badge bg-dark">Out of Stock</span></td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-primary" onclick="event.stopPropagation(); showModal('stockModal', 'Office Chair Premium', 0)">
+                                            <i class="fas fa-boxes"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sales Page -->
+    <div id="sales" class="page-content">
+        <div class="container-fluid py-4">
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h1><i class="fas fa-shopping-cart text-primary"></i> Sales</h1>
+                        <button class="btn btn-success" onclick="showModal('newSaleModal')">
+                            <i class="fas fa-plus"></i> New Sale
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sales Summary Cards -->
+            <div class="row mb-4">
+                <div class="col-md-4">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h3 class="text-primary">1,250.00 MAD</h3>
+                            <p class="mb-0">Today's Sales</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h3 class="text-success">8,750.00 MAD</h3>
+                            <p class="mb-0">This Week</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h3 class="text-info">32,500.00 MAD</h3>
+                            <p class="mb-0">This Month</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Sales -->
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-list"></i> Recent Sales</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Sale #</th>
+                                    <th>Date</th>
+                                    <th>Customer</th>
+                                    <th>Items</th>
+                                    <th>Total</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="table-row" onclick="showSaleDetails('20241205001', 'Ahmed Hassan', '2 items', '127.50 MAD')">
+                                    <td><strong>#20241205001</strong></td>
+                                    <td>Dec 5, 2024</td>
+                                    <td>Ahmed Hassan</td>
+                                    <td>2 items</td>
+                                    <td><strong>127.50 MAD</strong></td>
+                                    <td><span class="badge bg-success">Paid</span></td>
+                                </tr>
+                                <tr class="table-row" onclick="showSaleDetails('20241205002', 'Fatima Benali', '1 item', '350.00 MAD')">
+                                    <td><strong>#20241205002</strong></td>
+                                    <td>Dec 5, 2024</td>
+                                    <td>Fatima Benali</td>
+                                    <td>1 item</td>
+                                    <td><strong>350.00 MAD</strong></td>
+                                    <td><span class="badge bg-warning text-dark">Pending</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Analytics Page -->
+    <div id="analytics" class="page-content">
+        <div class="container-fluid py-4">
+            <div class="row mb-4">
+                <div class="col-12">
+                    <h1><i class="fas fa-chart-bar text-primary"></i> Analytics</h1>
+                    <p class="text-muted">Business insights and reports</p>
+                </div>
+            </div>
+
+            <!-- Analytics Cards -->
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5><i class="fas fa-chart-pie"></i> ABC Analysis</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row text-center">
+                                <div class="col-4">
+                                    <h4 class="text-success">2</h4>
+                                    <small>Class A Products</small>
+                                    <p class="text-muted">80% of revenue</p>
+                                </div>
+                                <div class="col-4">
+                                    <h4 class="text-warning">2</h4>
+                                    <small>Class B Products</small>
+                                    <p class="text-muted">15% of revenue</p>
+                                </div>
+                                <div class="col-4">
+                                    <h4 class="text-secondary">1</h4>
+                                    <small>Class C Products</small>
+                                    <p class="text-muted">5% of revenue</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5><i class="fas fa-chart-line"></i> Inventory Turnover</h5>
+                        </div>
+                        <div class="card-body text-center">
+                            <h2 class="text-primary">4.2x</h2>
+                            <p class="text-muted">Annual turnover rate</p>
+                            <small class="text-success">
+                                <i class="fas fa-arrow-up"></i> 12% improvement from last year
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reports -->
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-file-alt"></i> Available Reports</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <button class="btn btn-outline-primary w-100" onclick="showNotification('Sales Report', 'Generating comprehensive sales report...')">
+                                <i class="fas fa-chart-bar"></i><br>
+                                Sales Report
+                            </button>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <button class="btn btn-outline-success w-100" onclick="showNotification('Inventory Report', 'Generating inventory valuation report...')">
+                                <i class="fas fa-warehouse"></i><br>
+                                Inventory Report
+                            </button>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <button class="btn btn-outline-info w-100" onclick="showNotification('Forecast Report', 'Generating demand forecast...')">
+                                <i class="fas fa-crystal-ball"></i><br>
+                                Demand Forecast
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Inventory Page -->
+    <div id="inventory" class="page-content">
+        <div class="container-fluid py-4">
+            <div class="row mb-4">
+                <div class="col-12">
+                    <h1><i class="fas fa-warehouse text-primary"></i> Inventory Management</h1>
+                </div>
+            </div>
+
+            <!-- Inventory Actions -->
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <button class="btn btn-primary w-100" onclick="showNotification('Stock Adjustment', 'Opening bulk stock adjustment tool...')">
+                        <i class="fas fa-boxes"></i><br>
+                        Bulk Adjustment
+                    </button>
+                </div>
+                <div class="col-md-3">
+                    <button class="btn btn-success w-100" onclick="showNotification('Reorder Report', 'Generating reorder recommendations...')">
+                        <i class="fas fa-shopping-cart"></i><br>
+                        Reorder Report
+                    </button>
+                </div>
+                <div class="col-md-3">
+                    <button class="btn btn-warning w-100" onclick="showNotification('Low Stock', 'Showing all low stock items...')">
+                        <i class="fas fa-exclamation-triangle"></i><br>
+                        Low Stock Items
+                    </button>
+                </div>
+                <div class="col-md-3">
+                    <button class="btn btn-info w-100" onclick="showNotification('Valuation', 'Calculating inventory valuation...')">
+                        <i class="fas fa-calculator"></i><br>
+                        Valuation Report
+                    </button>
+                </div>
+            </div>
+
+            <!-- Recent Transactions -->
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-history"></i> Recent Inventory Transactions</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Product</th>
+                                    <th>Type</th>
+                                    <th>Quantity</th>
+                                    <th>Stock After</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Dec 5, 2024 14:30</td>
+                                    <td>Cotton Fabric - Blue</td>
+                                    <td><span class="badge bg-danger">Sale</span></td>
+                                    <td>-5</td>
+                                    <td>150</td>
+                                </tr>
+                                <tr>
+                                    <td>Dec 4, 2024 09:15</td>
+                                    <td>LED Light Bulb 10W</td>
+                                    <td><span class="badge bg-success">Purchase</span></td>
+                                    <td>+50</td>
+                                    <td>55</td>
+                                </tr>
+                                <tr>
+                                    <td>Dec 3, 2024 16:45</td>
+                                    <td>Wireless Mouse</td>
+                                    <td><span class="badge bg-warning text-dark">Adjustment</span></td>
+                                    <td>-2</td>
+                                    <td>8</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <!-- Add Product Modal -->
+    <div class="modal fade" id="addProductModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-plus"></i> Add New Product</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="mb-3">
+                            <label class="form-label">Product Name</label>
+                            <input type="text" class="form-control" placeholder="Enter product name">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">SKU</label>
+                            <input type="text" class="form-control" placeholder="Enter SKU">
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Category</label>
+                                    <select class="form-select">
+                                        <option>Textiles</option>
+                                        <option>Electronics</option>
+                                        <option>Office Supplies</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Unit Price (MAD)</label>
+                                    <input type="number" class="form-control" placeholder="0.00">
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="addProduct()">Add Product</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stock Adjustment Modal -->
+    <div class="modal fade" id="stockModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-boxes"></i> Adjust Stock</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Product</label>
+                        <p class="form-control-plaintext" id="stockProductName"></p>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Current Stock</label>
+                        <p class="form-control-plaintext" id="stockCurrentLevel"></p>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Adjustment</label>
+                        <input type="number" class="form-control" id="stockAdjustment" placeholder="Enter adjustment (+/-)">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Reason</label>
+                        <select class="form-select">
+                            <option>Manual Adjustment</option>
+                            <option>Purchase/Receiving</option>
+                            <option>Damage/Loss</option>
+                            <option>Customer Return</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="adjustStock()">Update Stock</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- New Sale Modal -->
+    <div class="modal fade" id="newSaleModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-shopping-cart"></i> New Sale</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>Customer Information</h6>
+                            <div class="mb-3">
+                                <input type="text" class="form-control" placeholder="Customer Name">
+                            </div>
+                            <div class="mb-3">
+                                <input type="email" class="form-control" placeholder="Email (optional)">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Sale Items</h6>
+                            <div class="mb-3">
+                                <select class="form-select">
+                                    <option>Select Product</option>
+                                    <option>Cotton Fabric - Blue</option>
+                                    <option>LED Light Bulb 10W</option>
+                                    <option>Silk Fabric - Red</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <input type="number" class="form-control" placeholder="Quantity">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-center">
+                        <h4>Total: <span class="text-success">0.00 MAD</span></h4>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-success" onclick="processSale()">Process Sale</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Page Navigation
+        function showPage(pageId) {
+            document.querySelectorAll('.page-content').forEach(page => {
+                page.classList.remove('active');
+            });
+            document.getElementById(pageId).classList.add('active');
+            
+            // Update navbar active state
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+
+        // Show Modal
+        function showModal(modalId, productName = '', currentStock = '') {
+            if (modalId === 'stockModal') {
+                document.getElementById('stockProductName').textContent = productName;
+                document.getElementById('stockCurrentLevel').textContent = currentStock + ' units';
+            }
+            new bootstrap.Modal(document.getElementById(modalId)).show();
+        }
+
+        // Notifications
+        function showNotification(title, message) {
+            const notification = document.createElement('div');
+            notification.className = 'notification alert alert-info alert-dismissible fade show';
+            notification.innerHTML = `
+                <strong>${title}</strong><br>
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 4000);
+        }
+
+        // Product Details
+        function showProductDetails(name, sku, stock, price, cost) {
+            const profit = ((price - cost) / cost * 100).toFixed(1);
+            showNotification('Product Details', 
+                `${name} (${sku})<br>
+                Stock: ${stock} units<br>
+                Price: ${price} MAD<br>
+                Profit Margin: ${profit}%`
+            );
+        }
+
+        // Sale Details
+        function showSaleDetails(saleNumber, customer, items, total) {
+            showNotification('Sale Details', 
+                `Sale ${saleNumber}<br>
+                Customer: ${customer}<br>
+                Items: ${items}<br>
+                Total: ${total}`
+            );
+        }
+
+        // Actions
+        function addProduct() {
+            showNotification('Success', 'Product added successfully!');
+            bootstrap.Modal.getInstance(document.getElementById('addProductModal')).hide();
+        }
+
+        function adjustStock() {
+            const adjustment = document.getElementById('stockAdjustment').value;
+            if (adjustment) {
+                showNotification('Success', `Stock adjusted by ${adjustment} units`);
+                bootstrap.Modal.getInstance(document.getElementById('stockModal')).hide();
+            }
+        }
+
+        function processSale() {
+            showNotification('Success', 'Sale processed successfully! Receipt generated.');
+            bootstrap.Modal.getInstance(document.getElementById('newSaleModal')).hide();
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            showNotification('Welcome', 'Welcome to SIMS! Click anywhere to explore the system.');
+        });
+    </script>
+</body>
+</html>

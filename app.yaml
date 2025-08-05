@@ -1,0 +1,8 @@
+runtime: python311
+
+env_variables:
+  SECRET_KEY: "sims-mustapha-baroudi-2024"
+
+handlers:
+- url: /.*
+  script: auto
